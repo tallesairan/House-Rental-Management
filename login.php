@@ -5,7 +5,8 @@ session_start();
 include('./db_connect.php');
 ob_start();
 if(!isset($_SESSION['system'])){
-	$system = $conn->query("SELECT * FROM system_settings limit 1")->fetch_array();
+	$stm = $conn->query("SELECT * FROM system_settings LIMIT 1");
+	$system = $stm->fetch(PDO::FETCH_ASSOC);
 	foreach($system as $k => $v){
 		$_SESSION['system'][$k] = $v;
 	}

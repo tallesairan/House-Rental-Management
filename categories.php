@@ -50,8 +50,9 @@
 							<tbody>
 								<?php 
 								$i = 1;
-								$category = $conn->query("SELECT * FROM categories order by id asc");
-								while($row=$category->fetch_assoc()):
+								$stmt = $pdo->prepare("SELECT * FROM categories ORDER BY id ASC");
+								$stmt->execute();
+								while($row = $stmt->fetch(PDO::FETCH_ASSOC)):
 								?>
 								<tr>
 									<td class="text-center"><?php echo $i++ ?></td>

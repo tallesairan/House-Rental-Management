@@ -22,9 +22,10 @@
 								<label class="control-label">Category</label>
 								<select name="category_id" id="" class="custom-select" required>
 									<?php 
-									$categories = $conn->query("SELECT * FROM categories order by name asc");
-									if($categories->num_rows > 0):
-									while($row= $categories->fetch_assoc()) :
+									$cstmt = $conn->prepare("SELECT * FROM categories order by name asc");
+									$cstmt->execute();
+									if($cstmt->rowCount() > 0):
+									while($row = $cstmt->fetch(PDO::FETCH_ASSOC)) :
 									?>
 									<option value="<?php echo $row['id'] ?>"><?php echo $row['name'] ?></option>
 								<?php endwhile; ?>
@@ -73,8 +74,9 @@
 							<tbody>
 								<?php 
 								$i = 1;
-								$house = $conn->query("SELECT h.*,c.name as cname FROM houses h inner join categories c on c.id = h.category_id order by id asc");
-								while($row=$house->fetch_assoc()):
+								$stmt = $conn->prepare("SELECT h.*,c.name as cname FROM houses h inner join categories c on c.id = h.category_id order by id asc");
+								$stmt->execute();
+								while($row = $stmt->fetch(PDO::FETCH_ASSOC)) :
 								?>
 								<tr>
 									<td class="text-center"><?php echo $i++ ?></td>

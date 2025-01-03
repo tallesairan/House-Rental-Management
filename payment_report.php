@@ -65,9 +65,15 @@ $month_of = isset($_GET['month_of']) ? $_GET['month_of'] : date('Y-m');
 									<?php 
 									$i = 1;
 									$tamount = 0;
-									$payments  = $conn->query("SELECT p.*,concat(t.lastname,', ',t.firstname,' ',t.middlename) as name,h.house_no FROM payments p inner join tenants t on t.id = p.tenant_id inner join houses h on h.id = t.house_id where date_format(p.date_created,'%Y-%m') = '$month_of' order by unix_timestamp(date_created)  asc");
-									if($payments->num_rows > 0 ):
-									while($row=$payments->fetch_assoc()):
+									$payments = $conn->prepare("SELECT p.*, CONCAT(t.lastname, ', ', t.firstname, ' ', t.middlename) AS name, h.house_no 
+										FROM payments p 
+										INNER JOIN tenants t ON t.id = p.tenant_id 
+										INNER JOIN houses h ON h.id = t.house_id 
+										WHERE DATE_FORMAT(p.date_created, '%Y-%m') = :month_of 
+										ORDER BY UNIX_TIMESTAMP(date_created) ASC");
+									$payments->execute([':month_of' => $month_of]);
+									if($payments->rowCount() > 0):
+									while($row = $payments->fetch(PDO::FETCH_ASSOC)):
 										$tamount += $row['amount'];
 									?>
 									<tr>

@@ -1,10 +1,12 @@
 <?php 
 include 'db_connect.php'; 
 if(isset($_GET['id'])){
-$qry = $conn->query("SELECT * FROM payments where id= ".$_GET['id']);
-foreach($qry->fetch_array() as $k => $val){
-    $$k=$val;
-}
+    $qry = $conn->prepare("SELECT * FROM payments WHERE id = :id");
+    $qry->execute([':id' => $_GET['id']]);
+    $result = $qry->fetch(PDO::FETCH_ASSOC);
+    foreach($result as $k => $val){
+        $$k=$val;
+    }
 }
 ?>
 <div class="container-fluid">
@@ -17,8 +19,10 @@ foreach($qry->fetch_array() as $k => $val){
                 <option value=""></option>
 
             <?php 
-            $tenant = $conn->query("SELECT *,concat(lastname,', ',firstname,' ',middlename) as name FROM tenants where status = 1 order by name asc");
-            while($row=$tenant->fetch_assoc()):
+            $tenant = $conn->prepare("SELECT *, concat(lastname, ', ', firstname, ' ', middlename) as name 
+                          FROM tenants WHERE status = 1 ORDER BY name ASC");
+            $tenant->execute();
+            while($row = $tenant->fetch(PDO::FETCH_ASSOC)):
             ?>
             <option value="<?php echo $row['id'] ?>" <?php echo isset($tenant_id) && $tenant_id == $row['id'] ? 'selected' : '' ?>><?php echo ucwords($row['name']) ?></option>
             <?php endwhile; ?>

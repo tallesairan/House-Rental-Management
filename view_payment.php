@@ -1,19 +1,31 @@
 <?php include 'db_connect.php' ?>
 
 <?php 
-$tenants =$conn->query("SELECT t.*,concat(t.lastname,', ',t.firstname,' ',t.middlename) as name,h.house_no,h.price FROM tenants t inner join houses h on h.id = t.house_id where t.id = {$_GET['id']} ");
-foreach($tenants->fetch_array() as $k => $v){
-	if(!is_numeric($k)){
-		$$k = $v;
-	}
+$stmt = $conn->prepare("SELECT t.*, concat(t.lastname, ', ', t.firstname, ' ', t.middlename) as name, h.house_no, h.price
+                       FROM tenants t 
+                       INNER JOIN houses h ON h.id = t.house_id 
+                       WHERE t.id = :id");
+$stmt->execute(['id' => $_GET['id']]);
+$tenant = $stmt->fetch(PDO::FETCH_ASSOC);
+foreach($tenant as $k => $v){
+    if(!is_numeric($k)){
+        $$k = $v;
+    }
 }
 $months = abs(strtotime(date('Y-m-d')." 23:59:59") - strtotime($date_in." 23:59:59"));
 $months = floor(($months) / (30*60*60*24));
 $payable = $price * $months;
-$paid = $conn->query("SELECT SUM(amount) as paid FROM payments where tenant_id =".$_GET['id']);
-$last_payment = $conn->query("SELECT * FROM payments where tenant_id =".$_GET['id']." order by unix_timestamp(date_created) desc limit 1");
-$paid = $paid->num_rows > 0 ? $paid->fetch_array()['paid'] : 0;
-$last_payment = $last_payment->num_rows > 0 ? date("M d, Y",strtotime($last_payment->fetch_array()['date_created'])) : 'N/A';
+$stmtPaid = $conn->prepare("SELECT SUM(amount) as paid FROM payments WHERE tenant_id = :id");
+$stmtPaid->execute(['id' => $_GET['id']]);
+$paid = $stmtPaid->fetch(PDO::FETCH_ASSOC)['paid'] ?? 0;
+$stmtLastPayment = $conn->prepare("SELECT * FROM payments WHERE tenant_id = :id ORDER BY unix_timestamp(date_created) DESC LIMIT 1");
+$stmtLastPayment->execute(['id' => $_GET['id']]);
+if($stmtLastPayment->rowCount() > 0){
+    $lp = $stmtLastPayment->fetch(PDO::FETCH_ASSOC)['date_created'];
+    $last_payment = date("M d, Y", strtotime($lp));
+} else {
+    $last_payment = 'N/A';
+}
 $outstanding = $payable - $paid;
 
 ?>
@@ -45,9 +57,10 @@ $outstanding = $payable - $paid;
 					</thead>
 					<tbody>
 						<?php 
-						$payments = $conn->query("SELECT * FROM payments where tenant_id = $id");
-						if($payments->num_rows > 0):
-						while($row=$payments->fetch_assoc()):
+						$stmtPayments = $conn->prepare("SELECT * FROM payments WHERE tenant_id = :id");
+						$stmtPayments->execute(['id' => $id]);
+						if($stmtPayments->rowCount() > 0):
+						    while($row = $stmtPayments->fetch(PDO::FETCH_ASSOC)):
 						?>
 					<tr>
 						<td><?php echo date("M d, Y",strtotime($row['date_created'])) ?></td>

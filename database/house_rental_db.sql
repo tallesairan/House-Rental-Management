@@ -60,8 +60,6 @@ CREATE TABLE `houses` (
 -- Dumping data for table `houses`
 --
 
-INSERT INTO `houses` (`id`, `house_no`, `category_id`, `description`, `price`) VALUES
-(1, '623', 4, 'Sample', 2500);
 
 -- --------------------------------------------------------
 
@@ -81,9 +79,7 @@ CREATE TABLE `payments` (
 -- Dumping data for table `payments`
 --
 
-INSERT INTO `payments` (`id`, `tenant_id`, `amount`, `invoice`, `date_created`) VALUES
-(1, 2, 2500, '123456', '2020-10-26 11:29:35'),
-(2, 2, 7500, '136654', '2020-10-26 11:30:21');
+
 
 -- --------------------------------------------------------
 
@@ -104,8 +100,6 @@ CREATE TABLE `system_settings` (
 -- Dumping data for table `system_settings`
 --
 
-INSERT INTO `system_settings` (`id`, `name`, `email`, `contact`, `cover_img`, `about_content`) VALUES
-(1, 'House Rental Management System', 'info@sample.comm', '+6948 8542 623', '1603344720_1602738120_pngtree-purple-hd-business-banner-image_5493.jpg', '&lt;p style=&quot;text-align: center; background: transparent; position: relative;&quot;&gt;&lt;span style=&quot;color: rgb(0, 0, 0); font-family: &amp;quot;Open Sans&amp;quot;, Arial, sans-serif; font-weight: 400; text-align: justify;&quot;&gt;&amp;nbsp;is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&rsquo;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.&lt;/span&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center; background: transparent; position: relative;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center; background: transparent; position: relative;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;');
 
 -- --------------------------------------------------------
 
@@ -129,8 +123,6 @@ CREATE TABLE `tenants` (
 -- Dumping data for table `tenants`
 --
 
-INSERT INTO `tenants` (`id`, `firstname`, `middlename`, `lastname`, `email`, `contact`, `house_id`, `status`, `date_in`) VALUES
-(2, 'John', 'C', 'Smith', 'jsmith@sample.com', '+18456-5455-55', 1, 1, '2020-07-02');
 
 -- --------------------------------------------------------
 
@@ -150,8 +142,6 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `username`, `password`, `type`) VALUES
-(1, 'Administrator', 'admin', '0192023a7bbd73250516f069df18b500', 1);
 
 --
 -- Indexes for dumped tables
@@ -237,3 +227,24 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+INSERT INTO `categories` (`id`, `name`) VALUES
+(1, 'Duplexo'),
+(2, 'Casa Unifamiliar'),
+(3, 'Casa Multifamiliar'),
+(4, 'Casa de 2 andares');
+
+INSERT INTO `houses` (`id`, `house_no`, `category_id`, `description`, `price`) VALUES
+(1, '623', 4, 'Exemplo', 2500);
+
+INSERT INTO `payments` (`id`, `tenant_id`, `amount`, `invoice`, `date_created`) VALUES
+(1, 2, 2500, '123456', '2020-10-26 11:29:35'),
+(2, 2, 7500, '136654', '2020-10-26 11:30:21');
+
+INSERT INTO `system_settings` (`id`, `name`, `email`, `contact`, `cover_img`, `about_content`) VALUES
+(1, 'Sistema de Gerenciamento de Aluguel de Casas', 'info@exemplo.com', '+6948 8542 623', '1603344720_1602738120_pngtree-purple-hd-business-banner-image_5493.jpg', '&lt;p style=&quot;text-align: center; background: transparent; position: relative;&quot;&gt;&lt;span style=&quot;color: rgb(0, 0, 0); font-family: &amp;quot;Open Sans&amp;quot;, Arial, sans-serif; font-weight: 400; text-align: justify;&quot;&gt;&amp;nbsp;é apenas texto de exemplo da indústria de impressão e tipografia. Lorem Ipsum tem sido o texto padrão da indústria desde os anos 1500, quando um impressor desconhecido pegou uma bandeja de tipos e os embaralhou para fazer um livro de modelos. Ele sobreviveu não apenas cinco séculos, mas também o salto para a tipografia eletrônica, permanecendo essencialmente inalterado. Tornou-se popular na década de 1960 com o lançamento de folhas de Letraset contendo passagens de Lorem Ipsum, e mais recentemente com softwares de editoração eletrônica como Aldus PageMaker, incluindo versões de Lorem Ipsum.&lt;/span&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center; background: transparent; position: relative;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center; background: transparent; position: relative;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;');
+
+INSERT INTO `tenants` (`id`, `firstname`, `middlename`, `lastname`, `email`, `contact`, `house_id`, `status`, `date_in`) VALUES
+(2, 'João', 'C', 'Silva', 'jsilva@exemplo.com', '+18456-5455-55', 1, 1, '2020-07-02');
+
+INSERT INTO `users` (`id`, `name`, `username`, `password`, `type`) VALUES
+(1, 'Administrador', 'admin', '0192023a7bbd73250516f069df18b500', 1);

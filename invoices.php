@@ -35,9 +35,9 @@
 							<tbody>
 								<?php 
 								$i = 1;
-								$invoices = $conn->query("SELECT p.*,concat(t.lastname,', ',t.firstname,' ',t.middlename) as name FROM payments p inner join tenants t on t.id = p.tenant_id where t.status = 1 order by date(p.date_created) desc ");
-								while($row=$invoices->fetch_assoc()):
-									
+								$stmt = $conn->prepare("SELECT p.*,concat(t.lastname,', ',t.firstname,' ',t.middlename) as name FROM payments p inner join tenants t on t.id = p.tenant_id where t.status = 1 order by date(p.date_created) desc ");
+								$stmt->execute();
+								while($row = $stmt->fetch(PDO::FETCH_ASSOC)):
 								?>
 								<tr>
 									<td class="text-center"><?php echo $i++ ?></td>
@@ -79,7 +79,7 @@
 	}
 	img{
 		max-width:100px;
-		max-height: :150px;
+		max-height:150px;
 	}
 </style>
 <script>

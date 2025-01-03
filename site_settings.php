@@ -1,8 +1,10 @@
 <?php
 include 'db_connect.php';
-$qry = $conn->query("SELECT * from system_settings limit 1");
-if($qry->num_rows > 0){
-	foreach($qry->fetch_array() as $k => $val){
+$stmt = $conn->prepare("SELECT * FROM system_settings LIMIT 1");
+$stmt->execute();
+$rs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if($rs){
+	foreach($rs[0] as $k => $val){
 		$meta[$k] = $val;
 	}
 }

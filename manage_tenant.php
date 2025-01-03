@@ -1,9 +1,10 @@
 <?php 
 include 'db_connect.php'; 
 if(isset($_GET['id'])){
-$qry = $conn->query("SELECT * FROM tenants where id= ".$_GET['id']);
-foreach($qry->fetch_array() as $k => $val){
-	$$k=$val;
+$qry = $conn->prepare("SELECT * FROM tenants WHERE id = ?");
+$qry->execute([$_GET['id']]);
+foreach($qry->fetch(PDO::FETCH_ASSOC) as $k => $val){
+	$$k = $val;
 }
 }
 ?>
@@ -41,8 +42,16 @@ foreach($qry->fetch_array() as $k => $val){
 				<select name="house_id" id="" class="custom-select select2">
 					<option value=""></option>
 					<?php 
-					$house = $conn->query("SELECT * FROM houses where id not in (SELECT house_id from tenants where status = 1) ".(isset($house_id)? " or id = $house_id": "" )." ");
-					while($row= $house->fetch_assoc()):
+					$house_sql = "SELECT * FROM houses WHERE id NOT IN (SELECT house_id FROM tenants WHERE status = 1)";
+					if (isset($house_id)) {
+						$house_sql .= " OR id = :house_id";
+					}
+					$house = $conn->prepare($house_sql);
+					if (isset($house_id)) {
+						$house->bindParam(':house_id', $house_id, PDO::PARAM_INT);
+					}
+					$house->execute();
+					while($row = $house->fetch(PDO::FETCH_ASSOC)):
 					?>
 					<option value="<?php echo $row['id'] ?>" <?php echo isset($house_id) && $house_id == $row['id'] ? 'selected' : '' ?>><?php echo $row['house_no'] ?></option>
 					<?php endwhile; ?>

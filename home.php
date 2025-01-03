@@ -50,7 +50,12 @@
                                     <div class="card-body text-white">
                                         <span class="float-right summary_icon"> <i class="fa fa-home "></i></span>
                                         <h4><b>
-                                            <?php echo $conn->query("SELECT * FROM houses")->num_rows ?>
+                                            <?php 
+                                            $stmt = $pdo->prepare("SELECT * FROM houses");
+                                            $stmt->execute();
+                                            $house_count = $stmt->rowCount();
+                                            echo $house_count;
+                                            ?>
                                         </b></h4>
                                         <p><b>Total Houses</b></p>
                                     </div>
@@ -70,7 +75,12 @@
                                     <div class="card-body text-white">
                                         <span class="float-right summary_icon"> <i class="fa fa-user-friends "></i></span>
                                         <h4><b>
-                                            <?php echo $conn->query("SELECT * FROM tenants where status = 1 ")->num_rows ?>
+                                            <?php 
+                                            $stmt = $pdo->prepare("SELECT * FROM tenants WHERE status = 1");
+                                            $stmt->execute();
+                                            $tenant_count = $stmt->rowCount();
+                                            echo $tenant_count;
+                                            ?>
                                         </b></h4>
                                         <p><b>Total Tenants</b></p>
                                     </div>
@@ -91,9 +101,11 @@
                                         <span class="float-right summary_icon"> <i class="fa fa-file-invoice "></i></span>
                                         <h4><b>
                                             <?php 
-                                             $payment = $conn->query("SELECT sum(amount) as paid FROM payments where date(date_created) = '".date('Y-m-d')."' "); 
-                                             echo $payment->num_rows > 0 ? number_format($payment->fetch_array()['paid'],2) : 0;
-                                             ?>
+                                            $stmt = $pdo->prepare("SELECT SUM(amount) AS paid FROM payments WHERE DATE(date_created) = :today");
+                                            $stmt->execute([':today' => date('Y-m-d')]);
+                                            $res = $stmt->fetch(PDO::FETCH_ASSOC);
+                                            echo $res ? number_format($res['paid'], 2) : 0;
+                                            ?>
                                         </b></h4>
                                         <p><b>Payments This Month</b></p>
                                     </div>

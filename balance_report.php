@@ -56,16 +56,24 @@
 									<?php 
 									$i = 1;
 									// $tamount = 0;
-									$tenants =$conn->query("SELECT t.*,concat(t.lastname,', ',t.firstname,' ',t.middlename) as name,h.house_no,h.price FROM tenants t inner join houses h on h.id = t.house_id where t.status = 1 order by h.house_no desc ");
-									if($tenants->num_rows > 0):
-									while($row=$tenants->fetch_assoc()):
+									$stmt = $pdo->prepare("SELECT t.*, CONCAT(t.lastname,', ',t.firstname,' ',t.middlename) AS name, h.house_no, h.price
+									    FROM tenants t 
+									    INNER JOIN houses h ON h.id = t.house_id 
+									    WHERE t.status = 1 
+									    ORDER BY h.house_no DESC");
+									$stmt->execute();
+									while($row = $stmt->fetch(PDO::FETCH_ASSOC)):
 										$months = abs(strtotime(date('Y-m-d')." 23:59:59") - strtotime($row['date_in']." 23:59:59"));
 										$months = floor(($months) / (30*60*60*24));
 										$payable = $row['price'] * $months;
-										$paid = $conn->query("SELECT SUM(amount) as paid FROM payments where tenant_id =".$row['id']);
-										$last_payment = $conn->query("SELECT * FROM payments where tenant_id =".$row['id']." order by unix_timestamp(date_created) desc limit 1");
-										$paid = $paid->num_rows > 0 ? $paid->fetch_array()['paid'] : 0;
-										$last_payment = $last_payment->num_rows > 0 ? date("M d, Y",strtotime($last_payment->fetch_array()['date_created'])) : 'N/A';
+										$stmt_paid = $pdo->prepare("SELECT SUM(amount) AS paid FROM payments WHERE tenant_id = :tid");
+										$stmt_paid->execute([':tid' => $row['id']]);
+										$p_res = $stmt_paid->fetch(PDO::FETCH_ASSOC);
+										$paid = $p_res ? $p_res['paid'] : 0;
+										$stmt_last = $pdo->prepare("SELECT date_created FROM payments WHERE tenant_id = :tid ORDER BY UNIX_TIMESTAMP(date_created) DESC LIMIT 1");
+										$stmt_last->execute([':tid' => $row['id']]);
+										$l_res = $stmt_last->fetch(PDO::FETCH_ASSOC);
+										$last_payment = $l_res ? date('M d, Y', strtotime($l_res['date_created'])) : 'N/A';
 										$outstanding = $payable - $paid;
 									?>
 									<tr>
